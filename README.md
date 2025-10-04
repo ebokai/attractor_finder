@@ -39,10 +39,10 @@ The renderer projects the trajectory onto a 2D plane, accumulating density with 
 | **renderer.pyx** | Cython implementation of pixel compositing (optimized per-sample loop). |
 | **iterator_cubic.pyx** | Cython kernel implementing the cubic iteration map in N dimensions. |
 | **functions.py** | Helper routines for coordinate scaling, aspect ratio correction, etc. |
-| **print_sizes.py** | Stores print resolutions for different paper sizes (e.g., `{'A4': (1920,1080)}`). |
 | **setup_renderer.py** / **setup_iterator.py** | Individual build scripts for each Cython extension. |
 | **setup.bat** | Windows batch file to compile both extensions using MinGW (`build_ext --inplace`). |
 | **run.bat** | Runs `main.py` and keeps the terminal open on completion. |
+| **print_sizes.json** | Stores print resolutions for different paper sizes (e.g., `{'A4': (1920,1080)}`). |
 | **render/** | Output folder for generated images (ignored by Git). |
 | **build/**, **dist/** | Auto-created by the Cython build process (ignored by Git). |
 
