@@ -14,6 +14,9 @@ def render_attractors(xl, yl, zl, coeff, dimension, seed, tag, alpha = 0.0075, x
 		xres, yres, debug=True)
 	zmin, zrng = get_minmax_rng(za)
 
+	bgcolor = np.array([0.9,0.9,0.85])
+	burn_factors = np.array([0.75,1.00,1.25])
+
 	if not np.isnan(xrng):
 
 		print('Calculating pixel values')
@@ -24,15 +27,15 @@ def render_attractors(xl, yl, zl, coeff, dimension, seed, tag, alpha = 0.0075, x
 		dzs = get_dx(zl)
 
 		print(f'Calculated difference arrays {time.time()-start:.1f} seconds')
-		render = np.asarray(render_pixels(xres,yres,xa[1:],ya[1:],za[1:],dxs,dys,dzs,xrng,xmin,yrng,ymin,zrng,zmin,alpha))
+		render = np.asarray(render_pixels(xres,yres,xa[1:],ya[1:],za[1:],dxs,dys,dzs,xrng,xmin,yrng,ymin,zrng,zmin,alpha,bgcolor,burn_factors))
 
 		print(f'Calculated pixel values {time.time()-start:.1f} seconds')
 
-		for k in range(3):
-			render[:, :, k][np.where(render[:, :, k] > 1)] = 1
-			render[:, :, k][np.where(render[:, :, k] < 0)] = 0
+		# for k in range(3):
+		# 	render[:, :, k][np.where(render[:, :, k] > 1)] = 1
+		# 	render[:, :, k][np.where(render[:, :, k] < 0)] = 0
 
-		print(f'Truncated oversaturated pixels {time.time()-start:.1f} seconds')
+		# print(f'Truncated oversaturated pixels {time.time()-start:.1f} seconds')
 
 		fname = f'render/D{dimension}-{seed}-{tag}.png'
 		plt.imsave(fname, render, dpi=300)

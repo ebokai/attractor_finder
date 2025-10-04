@@ -13,7 +13,7 @@ def search_attractors(search_iterates, dimension):
 
 	ncoeffs = int(d + 11/6 * d**2 + d**3 + d**4/6)
 	seed = np.random.randint(1, 2e9)
-	# np.random.seed()
+	np.random.seed(seed)
 
 	while not found:
 				
