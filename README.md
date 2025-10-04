@@ -42,7 +42,7 @@ The renderer projects the trajectory onto a 2D plane, accumulating density with 
 | **setup_renderer.py** / **setup_iterator.py** | Individual build scripts for each Cython extension. |
 | **setup.bat** | Windows batch file to compile both extensions using MinGW (`build_ext --inplace`). |
 | **run.bat** | Runs `main.py` and keeps the terminal open on completion. |
-| **print_sizes.json** | Stores print resolutions for different paper sizes (e.g., `{'A4': (1920,1080)}`). |
+| **print_sizes.json** | Stores print resolutions for different paper sizes at 300 dpi (e.g., `{'A4': (2481,3508)}`). |
 | **render/** | Output folder for generated images (ignored by Git). |
 | **build/**, **dist/** | Auto-created by the Cython build process (ignored by Git). |
 
