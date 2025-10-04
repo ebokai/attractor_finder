@@ -6,7 +6,7 @@ import numpy as np
 # @cython.boundscheck(False)
 # @cython.wraparound(False)
 
-def iteration_cubic_8d(int n_iterations, double[:] coeffs, int dimension):
+def iteration_cubic(int n_iterations, double[:] coeffs, int dimension):
 
 	cdef double fsum = 0
 
