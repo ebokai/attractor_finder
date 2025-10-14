@@ -17,7 +17,7 @@ def iteration_cubic(int n_iterations, double[:] coeffs, int dimension):
 	cdef int j 
 	cdef int k 
 
-	cdef double[:] coords = np.zeros(dimension + 1)
+	cdef double[:] coords = np.random.uniform(-1e-1, 1e-1, (dimension + 1))
 	cdef double[:] sums = np.zeros(dimension)
 	cdef double[:,:] itdata = np.zeros((n_iterations, dimension))
 
