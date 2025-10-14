@@ -8,7 +8,6 @@ def get_minmax_rng(data):
 	return min_val, data_range
 
 def get_dx(xdata):
-	print('Calculating differences')
 	dx = abs(xdata - np.roll(xdata, 1))[1:]
 	return dx
 

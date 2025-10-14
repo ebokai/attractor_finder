@@ -16,7 +16,7 @@ if exist build rmdir /s /q build
 if exist dist rmdir /s /q dist
 
 REM Build renderer extension
-echo [1/2] Building renderer...
+echo [1/3] Building renderer...
 python setup_renderer.py build_ext --inplace --compiler=mingw32
 if errorlevel 1 (
     echo ERROR: Failed to build renderer.pyx
@@ -25,13 +25,23 @@ if errorlevel 1 (
 echo.
 
 REM Build iterator extension
-echo [2/2] Building iterator...
+echo [2/3] Building batch renderer...
+python setup_batch_renderer.py build_ext --inplace --compiler=mingw32
+if errorlevel 1 (
+    echo ERROR: Failed to build batch_renderer.pyx
+    exit /b 1
+)
+echo.
+
+REM Build iterator extension
+echo [3/3] Building iterator...
 python setup_iterator.py build_ext --inplace --compiler=mingw32
 if errorlevel 1 (
     echo ERROR: Failed to build iterator.pyx
     exit /b 1
 )
 echo.
+
 
 echo =====================================================
 echo   Build completed successfully!

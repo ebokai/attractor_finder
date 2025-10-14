@@ -33,8 +33,7 @@ def compute_attractors(coeffs, render_iterates, render_check_ratio,dimension, n_
     if np.isnan(itdata[-1,-1]) or np.isinf(itdata[-1,-1]):
         print('Error during calculation')
         return None, True
-
-    # n_processes = 6
+        
     thread_iterates = render_iterates // n_processes
     args_list = [(thread_iterates, coeffs, dimension) for _ in range(n_processes)]
     start = time.time()

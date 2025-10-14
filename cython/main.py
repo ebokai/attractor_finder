@@ -12,7 +12,7 @@ if __name__ == "__main__":
 	save_data = False
 
 	search_iterates = 2000
-	render_iterates = 10_000_000
+	render_iterates = 50_000_000
 	render_check_ratio = 0.01
 	n_attractors = 100
 	alpha = 0.025
