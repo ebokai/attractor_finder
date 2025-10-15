@@ -41,9 +41,9 @@ def compute_burn(int xres, int yres,
         burn_factor_b = alpha * z_alpha * (1+dz/mdz) * bfb
 
         # Multiplicative burn (scale toward black)
-        render[I,J,0] *= (1 - burn_factor_r)
-        render[I,J,1] *= (1 - burn_factor_g)
-        render[I,J,2] *= (1 - burn_factor_b)
+        render[I,J,0] *= (1 - burn_factor_r * render[I,J,0])
+        render[I,J,1] *= (1 - burn_factor_g * render[I,J,1])
+        render[I,J,2] *= (1 - burn_factor_b * render[I,J,2])
 
     return render
 

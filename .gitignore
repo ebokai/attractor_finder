@@ -1,0 +1,48 @@
+# =======================================
+# Python + Cython + Project-specific ignore
+# =======================================
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.py.class
+
+# --- Virtual environments ---
+venv/
+.env/
+.venv/
+env/
+
+# --- Cython build artifacts ---
+# generated C code
+*.c
+*.cpp
+# compiled extension modules
+*.pyd
+*.so
+*.dll
+
+# --- Build and distribution folders ---
+build/
+dist/
+*.egg-info/
+
+# --- Your project-specific outputs ---
+render/
+output/
+logs/
+tmp/
+scratch/
+analysis/
+
+# --- Jupyter / Editor cruft ---
+.ipynb_checkpoints/
+*.log
+*.swp
+*.bak
+.DS_Store
+Thumbs.db
+
+# --- VSCode / IDE configs (optional) ---
+.vscode/
+.idea/

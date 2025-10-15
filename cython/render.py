@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 from functions import *
 from renderer import render_pixels
 from batch_renderer import compute_burn, compute_render_slice
-from numpy_renderer import compute_burn_numpy
 
 from concurrent.futures import ProcessPoolExecutor
 
@@ -17,6 +16,14 @@ def render_worker(args):
 	xres, yres, ymin, ymax, bgcolor, burn_factor = args
 	return np.array(compute_render_slice(xres, yres, ymin, ymax, bgcolor, burn_factor))
 
+def compute_histogram(full_burn, dimension, seed):
+	burn_values = np.ravel(full_burn[:,:,0])
+	burn_values = burn_values[np.isfinite(burn_values)]
+	counts, _ = np.histogram(burn_values, bins = 100)
+	return np.all(counts >= 1e3)
+
+
+
 def render_attractors(xl, yl, zl, coeff, dimension, seed, tag, alpha = 0.0075, xres = 3200, yres = 1800, n_processes = 6):
 
 	xa = np.asarray(xl)
@@ -29,6 +36,7 @@ def render_attractors(xl, yl, zl, coeff, dimension, seed, tag, alpha = 0.0075, x
 
 	bgcolor = np.array([0.9,0.9,0.85])
 	burn_factors = np.array([0.75,1.00,1.25])
+
 
 	n_iterates = np.size(xa[1:])
 
@@ -66,6 +74,10 @@ def render_attractors(xl, yl, zl, coeff, dimension, seed, tag, alpha = 0.0075, x
 				full_burn *= batch
 			print(f'Calculated burn values: {time.time()-burn_start:.1f} seconds')
 
+			if not (compute_histogram(full_burn, dimension, seed)):
+				print('Sparse histogram - skipping rendering')
+				return
+
 			pixel_start = time.time()
 
 			y_slice = np.linspace(0,yres,n_processes+1).astype(int)
@@ -87,7 +99,7 @@ def render_attractors(xl, yl, zl, coeff, dimension, seed, tag, alpha = 0.0075, x
 			print(f'One-pass rendering: {time.time()-render_start:.1f} seconds')
 
 
-		fname = f'render/D{dimension}-{seed}-{tag}.png'
+		fname = f'./render/D{dimension}-{seed}-{tag}.png'
 		plt.imsave(fname, render, dpi=300)
 		print('Saved ' + fname)
 		print(f'Total rendering time: {time.time()-start:.1f} seconds')
