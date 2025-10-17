@@ -33,7 +33,6 @@ output/
 logs/
 tmp/
 scratch/
-analysis/
 
 # --- Jupyter / Editor cruft ---
 .ipynb_checkpoints/
