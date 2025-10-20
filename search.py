@@ -36,7 +36,7 @@ def search_attractors(search_iterates, dimension):
                 print("────────────────────────────────────────────")
                 print(f"• Dimension:        {d}")
                 print(f"• Seed:             {seed}")
-                print(f"• Discovery Time:   {time.perf_counter()-start:.2f} s\n")
+                print(f"• Discovery Time:   {time.perf_counter()-start:.1f} s\n")
                 found = True
             
     return coeffs, seed
