@@ -1,11 +1,5 @@
 import numpy as np 
 
-# cimport numpy as np
-# cimport cython
-
-# @cython.boundscheck(False)
-# @cython.wraparound(False)
-
 def iteration_cubic(int n_iterations, double[:] coeffs, int dimension):
 
 	cdef double fsum = 0
@@ -20,15 +14,6 @@ def iteration_cubic(int n_iterations, double[:] coeffs, int dimension):
 	cdef double[:] coords = np.random.uniform(-1e-1, 1e-1, (dimension + 1))
 	cdef double[:] sums = np.zeros(dimension)
 	cdef double[:,:] itdata = np.zeros((n_iterations, dimension))
-
-	# cdef np.ndarray[np.float64_t,ndim=1] coords 
-	# coords = np.zeros(dimension + 1, dtype=np.float64)
-
-	# cdef np.ndarray[np.float64_t,ndim=1] sums
-	# sums = np.zeros(dimension, dtype=np.float64)
-
-	# cdef np.ndarray[np.float64_t,ndim=2] itdata
-	# itdata = np.zeros((n_iterations,dimension), dtype=np.float64)
 
 	coords[0] = 1
 
