@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
 	for i in range(n_attractors):
 
-		start = time.time()
+		start = time.perf_counter()
 
 		dimension = np.random.randint(2,7)
 
@@ -42,6 +42,7 @@ if __name__ == "__main__":
 				itdata[10000:, dimension - 1], 
 				coeffs, dimension, seed, 'xyz', alpha = alpha, xres = xres, yres = yres)
 
-		print(f'Total time: {time.time()-start:.2f} seconds')
+		print(f" Total Runtime:        {time.perf_counter()-start:.1f} s")
+		print("────────────────────────────────────────────\n")
 
 

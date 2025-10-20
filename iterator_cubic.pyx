@@ -1,4 +1,7 @@
+#cython: boundscheck=False, wraparound=False, nonecheck=False
+
 import numpy as np 
+
 
 def iteration_cubic(int n_iterations, double[:] coeffs, int dimension):
 
