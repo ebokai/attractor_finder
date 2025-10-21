@@ -1,10 +1,12 @@
 import numpy as np 
 import matplotlib.pyplot as plt
-from functions import *
-from renderer import render_pixels
-from batch_renderer import compute_burn, compute_render_slice
 
 from concurrent.futures import ProcessPoolExecutor
+from pathlib import Path
+
+from attractor_finder.functions import get_min_max_range, set_aspect, get_dx
+from attractor_finder.renderer_batch import compute_burn, compute_render_slice
+from attractor_finder.renderer import render_pixels
 
 import time 
 
@@ -24,7 +26,7 @@ def compute_histogram(full_burn, dimension, seed):
 
 
 
-def render_attractors(xl, yl, zl, coeff, dimension, seed, tag, alpha = 0.0075, xres = 3200, yres = 1800, n_processes = 6):
+def render_attractor(xl, yl, zl, coeff, dimension, seed, tag, alpha = 0.0075, xres = 3200, yres = 1800, n_processes = 6):
 
     xa = np.asarray(xl)
     ya = np.asarray(yl)
@@ -32,7 +34,7 @@ def render_attractors(xl, yl, zl, coeff, dimension, seed, tag, alpha = 0.0075, x
 
     xmin, ymin, xrng, yrng, xdr, ydr = set_aspect(xa, ya, 
         xres, yres, debug=True)
-    zmin, zrng = get_minmax_rng(za)
+    zmin, zrng = get_min_max_range(za)
 
     bgcolor = np.array([0.9,0.9,0.85])
     burn_factors = np.array([0.75,1.00,1.25])
@@ -99,7 +101,9 @@ def render_attractors(xl, yl, zl, coeff, dimension, seed, tag, alpha = 0.0075, x
             print(f"• One-Pass Render:     {time.perf_counter()-render_start:.1f} s")
 
 
-        fname = f'./render/D{dimension}-{seed}-{tag}.png'
+        output_dir = Path(__file__).parents[2] / "output" 
+        output_dir.mkdir(parents=True, exist_ok=True)
+        fname = output_dir / f'D{dimension}-{seed}-{tag}.png'
         
         plt.imsave(fname, render, dpi=300)
         print(f"• Output:              {fname}\n")

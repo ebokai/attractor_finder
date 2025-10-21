@@ -24,6 +24,7 @@ env/
 
 # --- Build and distribution folders ---
 build/
+cython_build/
 dist/
 *.egg-info/
 

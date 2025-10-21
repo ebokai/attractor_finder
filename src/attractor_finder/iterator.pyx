@@ -3,7 +3,7 @@
 import numpy as np 
 
 
-def iteration_cubic(int n_iterations, double[:] coeffs, int dimension):
+def iterator(int n_iterations, double[:] coeffs, int dimension):
 
 	cdef double fsum = 0
 
