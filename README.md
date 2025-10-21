@@ -11,8 +11,8 @@ from the root directory.
 
 To run:
 
-```/scripts/run.bat```
+```./scripts/run.bat``` (Windows)
 
 or 
 
-```/scripts/python main.py```
+```./scripts/python main.py```
