@@ -1,6 +1,6 @@
 import numpy as np 
 
-def get_minmax_rng(data):
+def get_min_max_range(data):
     max_val = data.max()
     min_val = data.min()
     data_range = max_val - min_val
@@ -22,8 +22,8 @@ def get_index(x, xmin, xrng, xres):
 
 def set_aspect(xdata, ydata, width, height, debug=False, margin=1.1):
     """ get boundaries for given aspect ratio w/h """
-    xmin, xrng = get_minmax_rng(xdata) 
-    ymin, yrng = get_minmax_rng(ydata)
+    xmin, xrng = get_min_max_range(xdata) 
+    ymin, yrng = get_min_max_range(ydata)
 
     xdata_rng = xrng 
     ydata_rng = yrng 

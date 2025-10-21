@@ -8,7 +8,7 @@ echo =====================================================
 echo.
 
 REM ---- Run your Python script ----
-python main.py
+python ./main.py
 
 echo.
 echo =====================================================

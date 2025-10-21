@@ -1,9 +1,10 @@
-from iterator_cubic import iteration_cubic
-from functions import pixel_density
 import numpy as np
 import time 
 
-def search_attractors(search_iterates, dimension):
+from attractor_finder.iterator import iterator
+from attractor_finder.functions import pixel_density
+
+def search_attractor(dimension, search_iterates = 2000):
 
     start = time.perf_counter()
 
@@ -18,7 +19,7 @@ def search_attractors(search_iterates, dimension):
     while not found:
                 
         coeffs = np.random.randint(-10, 11, ncoeffs)/(10 + 2 * dimension)
-        itdata = np.asarray(iteration_cubic(search_iterates, coeffs, dimension))
+        itdata = np.asarray(iterator(search_iterates, coeffs, dimension))
 
         test = itdata[-1,-1]
 
