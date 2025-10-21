@@ -1,18 +1,34 @@
 # Cubic Iterator Attractor Renderer
 
-A high-performance Python/Cython pipeline for generating and visualizing high-dimensional **iterated map attractors**.  
-This project explores chaotic structures defined by discrete cubic maps in 2 or more dimensions, using optimized numerical kernels and a custom renderer.
+A high-performance Python+Cython pipeline for generating and visualizing high-dimensional **iterated map attractors**. It explores chaotic structures defined by discrete cubic maps in 2+ dimensions using optimized numerical kernels and custom rendering.
 
-To install:
+## Installation
 
-```python -m pip install -e .```
+From the project root:
 
-from the root directory.
+```bash
+python -m pip install -e .
+```
 
-To run:
+## Usage
 
-```./scripts/run.bat``` (Windows)
+Run the attractor generator:
 
-or 
+```bash
+./scripts/run.bat        # Windows
+python scripts/main.py   # Cross-platform
+```
 
-```./scripts/python main.py```
+### Optional arguments:
+```bash
+--render_iterates   # Number of iterations per attractor
+--n_attractors      # Total attractors to generate
+--alpha             # Alpha blending for rendering
+--save_data         # Save iteration data as .npy
+```
+
+Example:
+```bash
+python scripts/main.py --render_iterates 25000000 --n_attractors 50 --alpha 0.02 --save_data
+```
+---
