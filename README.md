@@ -8,3 +8,11 @@ To install:
 ```python -m pip install -e .```
 
 from the root directory.
+
+To run:
+
+```/scripts/run.bat```
+
+or 
+
+```/scripts/python main.py```
