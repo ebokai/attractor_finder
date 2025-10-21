@@ -8,7 +8,7 @@ echo =====================================================
 echo.
 
 REM ---- Run your Python script ----
-python ./main.py
+python ./main.py --render_iterates 50000000 --n_attractors 10 --alpha 0.025
 
 echo.
 echo =====================================================
