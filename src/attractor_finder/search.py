@@ -4,7 +4,7 @@ import time
 from attractor_finder.iterator import iterator
 from attractor_finder.functions import pixel_density
 
-def search_attractor(dimension, search_iterates = 2000):
+def search_attractor(dimension, search_iterates = 2000, seed = None):
 
     start = time.perf_counter()
 
@@ -13,7 +13,9 @@ def search_attractor(dimension, search_iterates = 2000):
     d = dimension
 
     ncoeffs = int(d + 11/6 * d**2 + d**3 + d**4/6)
-    seed = np.random.randint(1, 2e9)
+
+    if seed is None:
+        seed = np.random.randint(1, 2e9)
     np.random.seed(seed)
 
     while not found:
