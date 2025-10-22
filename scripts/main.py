@@ -13,7 +13,7 @@ def load_print_sizes():
 		return json.load(f)
 
 def generate_attractor(render_iterates, xres, yres, alpha):
-	dimension = np.random.randint(2,4)
+	dimension = 2 # np.random.randint(2,4)
 	coeffs, seed = search_attractor(dimension)
 	itdata, error = compute_attractor(coeffs, render_iterates, dimension)
 

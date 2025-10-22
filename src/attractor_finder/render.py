@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
-from attractor_finder.functions import get_min_max_range, set_aspect, get_dx
+from attractor_finder.functions import set_aspect
+from attractor_finder.functions_numba import get_dx_numba_parallel, get_max_numba, get_min_max_range_numba
 from attractor_finder.renderer_batch import compute_burn, compute_render_slice
 from attractor_finder.renderer import render_pixels
 
@@ -32,9 +33,9 @@ def render_attractor(xl, yl, zl, coeff, dimension, seed, tag, alpha = 0.0075, xr
     ya = np.asarray(yl)
     za = np.asarray(zl)
 
-    xmin, ymin, xrng, yrng, xdr, ydr = set_aspect(xa, ya, 
-        xres, yres, debug=True)
-    zmin, zrng = get_min_max_range(za)
+    xmin, ymin, xrng, yrng = set_aspect(xa, ya, xres, yres, debug=True)
+    zmin, zrng = get_min_max_range_numba(za)
+
 
     bgcolor = np.array([0.9,0.9,0.85])
     burn_factors = np.array([0.75,1.00,1.25])
@@ -48,13 +49,13 @@ def render_attractor(xl, yl, zl, coeff, dimension, seed, tag, alpha = 0.0075, xr
         print("────────────────────────────────────────────")
         start = time.perf_counter()
 
-        dxs = get_dx(xl)
-        dys = get_dx(yl)
-        dzs = get_dx(zl)
+        dxs = get_dx_numba_parallel(xl)
+        dys = get_dx_numba_parallel(yl)
+        dzs = get_dx_numba_parallel(zl)
 
-        max_dx = dxs.max()
-        max_dy = dys.max()
-        max_dz = dzs.max()
+        max_dx = get_max_numba(dxs)
+        max_dy = get_max_numba(dys)
+        max_dz = get_max_numba(dzs)
 
         max_ds = np.array([max_dx, max_dy, max_dz])
         print(f"• Difference Arrays:   {time.perf_counter()-start:.1f} s")

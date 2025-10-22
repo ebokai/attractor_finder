@@ -34,7 +34,7 @@ def search_attractor(dimension, search_iterates = 2000, seed = None):
         if not out_of_bounds:
             xa = itdata[:,0]
             ya = itdata[:,1]
-            if pixel_density(xa,ya):
+            if pixel_density(xa, ya):
                 print("────────────────────────────────────────────")
                 print(" Attractor Found")
                 print("────────────────────────────────────────────")

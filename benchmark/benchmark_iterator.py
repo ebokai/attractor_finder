@@ -20,7 +20,7 @@ def test_iterators(dimension = 2, seed = None):
         print(f"❌ Iterators differ for dimension {dimension} (seed: {used_seed}) — check for numerical or logical discrepancies")
 
 
-def benchmark_iterator(func, seed, n_runs=10, n_iterations=100_000, dimension=2):
+def benchmark_iterator(func, seed, n_runs=10, n_iterations=1_000_000, dimension=2):
     if seed is None:
         seed = np.random.randint(1, 2_000_000_000)
     np.random.seed(seed)
@@ -77,6 +77,6 @@ if __name__ == "__main__":
 
     for d in range(2,7):
         test_iterators(dimension=d)
-    dims, avg_orig, std_orig = run_benchmarks_across_dimensions(iterator, max_dim=6, n_runs=100, n_iterations=100_000, seed=5)
-    _, avg_opt, std_opt = run_benchmarks_across_dimensions(iterator_optimized, max_dim=6, n_runs=100, n_iterations=100_000,seed=5)
+    dims, avg_orig, std_orig = run_benchmarks_across_dimensions(iterator, max_dim=6, n_runs=100, n_iterations=1_000_000, seed=5)
+    _, avg_opt, std_opt = run_benchmarks_across_dimensions(iterator_optimized, max_dim=6, n_runs=100, n_iterations=1_000_000,seed=5)
     plot_results(dims, avg_orig, std_orig, avg_opt, std_opt)
