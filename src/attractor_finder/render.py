@@ -12,18 +12,80 @@ from attractor_finder.renderer import render_pixels
 import time 
 
 def burn_worker(args):
-    xres, yres, xa, ya, za, dx, dy, dz, xrng, xmin, yrng, ymin, zrng, zmin, alpha, max_ds, burn_factors = args
-    return np.asarray(compute_burn(xres, yres, xa, ya, za, dx, dy, dz, xrng, xmin, yrng, ymin, zrng, zmin, alpha, max_ds, burn_factors))
+    return np.asarray(compute_burn(*args))
 
 def render_worker(args):
-    xres, yres, ymin, ymax, bgcolor, burn_factor = args
-    return np.array(compute_render_slice(xres, yres, ymin, ymax, bgcolor, burn_factor))
+    return np.asarray(compute_render_slice(*args))
 
-def compute_histogram(full_burn, dimension, seed):
-    burn_values = np.ravel(full_burn[:,:,0])
-    burn_values = burn_values[np.isfinite(burn_values)]
-    counts, _ = np.histogram(burn_values, bins = 100)
-    return np.all(counts >= 1e3)
+def construct_burn_args(xres, yres, xa, ya, za, dx, dy, dz, bounds, max_deltas, alpha, n_processes, burn_factors = np.array([0.75, 1.00, 1.25])):
+    n_iterates = np.size(xa[1:])
+    it_ranges = np.linspace(1, n_iterates, n_processes + 1).astype(int)
+    xmin, ymin, zmin, xrng, yrng, zrng = bounds
+
+    args_list_burn = []
+    for i in range(n_processes):
+        i0, i1 = it_ranges[i], it_ranges[i+1]
+        args = (
+            xres, yres, 
+            xa[i0:i1], ya[i0:i1], za[i0:i1],
+            dx[i0-1:i1-1], dy[i0-1:i1-1], dz[i0-1:i1-1],
+            xrng, xmin, yrng, ymin, zrng, zmin,
+            alpha, max_deltas, burn_factors)
+        args_list_burn.append(args)
+
+    return args_list_burn
+
+def construct_render_args(xres, yres, full_burn, n_processes, bgcolor = np.array([0.90, 0.90, 0.85])):
+    y_slice = np.linspace(0, yres, n_processes+1).astype(int)
+    args_list_render = [(xres, yres, y_slice[i], y_slice[i+1], bgcolor, full_burn) for i in range(n_processes)]
+    return args_list_render
+
+def compute_deltas(xa, ya, za):
+    start = time.perf_counter()
+    dx = get_dx_numba_parallel(xa)
+    dy = get_dx_numba_parallel(ya)
+    dz = get_dx_numba_parallel(za)
+
+    max_dx = get_max_numba(dx)
+    max_dy = get_max_numba(dy)
+    max_dz = get_max_numba(dz)
+
+    max_deltas = np.array([max_dx, max_dy, max_dz])
+    print(f"• Difference Arrays:   {time.perf_counter()-start:.1f} s")
+
+    return dx, dy, dz, max_deltas
+
+def get_bounds(xa, ya, za, xres, yres):
+    xmin, ymin, xrng, yrng = set_aspect(xa, ya, xres, yres, debug=True)
+    zmin, zrng = get_min_max_range_numba(za)
+    return [xmin, ymin, zmin, xrng, yrng, zrng], np.isnan(xrng)
+
+def burn_pool(args_list_burn, n_processes, xres, yres):
+    burn_start = time.perf_counter()
+
+    with ProcessPoolExecutor(max_workers = n_processes) as executor:
+        burn_batch = list(executor.map(burn_worker, args_list_burn))
+
+    full_burn = np.ones((yres, xres, 3))
+    for batch in burn_batch:
+        full_burn *= batch
+
+    print(f"• Burn Values:         {time.perf_counter()-burn_start:.1f} s")
+    return full_burn
+
+def render_pool(args_list_render, n_processes, xres, yres):
+    pixel_start = time.perf_counter()
+
+    with ProcessPoolExecutor(max_workers = n_processes) as executor:
+        render_batch = list(executor.map(render_worker, args_list_render))
+
+    render = np.zeros((yres, xres, 3))
+    for batch in render_batch:
+        render += batch
+    render = np.clip(render, 0, 1)
+
+    print(f"• Pixel Colors:        {time.perf_counter()-pixel_start:.1f} s")
+    return render
 
 
 
@@ -33,72 +95,34 @@ def render_attractor(xl, yl, zl, coeff, dimension, seed, tag, alpha = 0.0075, xr
     ya = np.asarray(yl)
     za = np.asarray(zl)
 
-    xmin, ymin, xrng, yrng = set_aspect(xa, ya, xres, yres, debug=True)
-    zmin, zrng = get_min_max_range_numba(za)
+    bounds, xnan = get_bounds(xa, ya, za, xres, yres)
 
+    if not xnan:
 
-    bgcolor = np.array([0.9,0.9,0.85])
-    burn_factors = np.array([0.75,1.00,1.25])
-
-
-    n_iterates = np.size(xa[1:])
-
-    if not np.isnan(xrng):
-
+        start = time.perf_counter()
         print(" Rendering")
         print("────────────────────────────────────────────")
-        start = time.perf_counter()
+        dx, dy, dz, max_deltas = compute_deltas(xa, ya, za)
 
-        dxs = get_dx_numba_parallel(xl)
-        dys = get_dx_numba_parallel(yl)
-        dzs = get_dx_numba_parallel(zl)
+        if len(xa) > 10_000_000:
 
-        max_dx = get_max_numba(dxs)
-        max_dy = get_max_numba(dys)
-        max_dz = get_max_numba(dzs)
-
-        max_ds = np.array([max_dx, max_dy, max_dz])
-        print(f"• Difference Arrays:   {time.perf_counter()-start:.1f} s")
-
-        if n_iterates > 10_000_000:
-            burn_start = time.perf_counter()
             multi_start = time.perf_counter()
-            
-            s = np.linspace(1,n_iterates,n_processes+1).astype(int)
-            args_list_burn = [(xres, yres, xa[s[i]:s[i+1]], ya[s[i]:s[i+1]], za[s[i]:s[i+1]], 
-                dxs[s[i]-1:s[i+1]-1], dys[s[i]-1:s[i+1]-1], dzs[s[i]-1:s[i+1]-1],
-                xrng, xmin, yrng, ymin, zrng, zmin, alpha, max_ds, burn_factors) for i in range(n_processes)]
 
-            with ProcessPoolExecutor(max_workers = n_processes) as executor:
-                burn_batch = list(executor.map(burn_worker, args_list_burn))
-            full_burn = np.ones((yres, xres, 3))
-            for batch in burn_batch:
-                full_burn *= batch
-            print(f"• Burn Values:         {time.perf_counter()-burn_start:.1f} s")
+            args_list_burn = construct_burn_args(xres, yres, xa, ya, za, dx, dy, dz, bounds, max_deltas, alpha, n_processes)
+            full_burn = burn_pool(args_list_burn, n_processes, xres, yres)
 
-            # if not (compute_histogram(full_burn, dimension, seed)):
-            #     print("────────────────────────────────────────────")
-            #     print('Sparse histogram - skipping rendering')
-            #     return
+            args_list_render = construct_render_args(xres, yres, full_burn, n_processes)
+            render = render_pool(args_list_render, n_processes, xres, yres)
 
-            pixel_start = time.perf_counter()
-
-            y_slice = np.linspace(0,yres,n_processes+1).astype(int)
-            args_list_render = [(xres, yres, y_slice[i], y_slice[i+1], bgcolor, full_burn) for i in range(n_processes)]
-
-            with ProcessPoolExecutor(max_workers = n_processes) as executor:
-                render_batch = list(executor.map(render_worker, args_list_render))
-            render = np.zeros((yres, xres, 3))
-            for batch in render_batch:
-                render += batch
-            render = np.clip(render, 0, 1)
-            print(f"• Pixel Colors:        {time.perf_counter()-pixel_start:.1f} s")
             print(f"• Multi-Pass Render:   {time.perf_counter()-multi_start:.1f} s")
 
         else:
+            # fix this 
+            # throws error because bgcolor and burn_factors are not in scope
             print('Rendering using one-pass rendering')
             render_start = time.perf_counter()
-            render = np.asarray(render_pixels(xres,yres,xa[1:],ya[1:],za[1:],dxs,dys,dzs,xrng,xmin,yrng,ymin,zrng,zmin,alpha,bgcolor,burn_factors))
+            xmin, ymin, zmin, xrng, yrng, zrng = bounds
+            render = np.asarray(render_pixels(xres,yres,xa[1:],ya[1:],za[1:],dx,dy,dz,xrng,xmin,yrng,ymin,zrng,zmin,alpha,bgcolor,burn_factors))
             print(f"• One-Pass Render:     {time.perf_counter()-render_start:.1f} s")
 
 
