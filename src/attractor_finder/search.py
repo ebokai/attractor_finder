@@ -21,7 +21,8 @@ def search_attractor(dimension, search_iterates = 2000, seed = None):
     while not found:
                 
         coeffs = np.random.randint(-10, 11, ncoeffs)/(10 + 2 * dimension)
-        itdata = np.asarray(iterator(search_iterates, coeffs, dimension))
+        x0 = np.random.uniform(-1e-1, 1e-1, (dimension + 1))
+        itdata = np.asarray(iterator(search_iterates, coeffs, x0, dimension))
 
         test = itdata[-1,-1]
 

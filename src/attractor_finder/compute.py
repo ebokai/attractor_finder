@@ -1,20 +1,21 @@
 import time
 import numpy as np
 
-from attractor_finder.iterator import iterator
+from attractor_finder.iterator import iterator, iterator_optimized
 from concurrent.futures import ProcessPoolExecutor
 
 def compute_attractor_single_thread(coeffs, render_iterates, dimension, render_check_ratio = 0.01):
 
     check_index = int(render_iterates * render_check_ratio)
-    itdata = np.asarray(iterator(check_index,coeffs,dimension))
+    x0 = np.random.uniform(-1e-1, 1e-1, (dimension + 1))
+    itdata = np.asarray(iterator_optimized(check_index, coeffs, x0, dimension))
 
     if np.isnan(itdata[-1,-1]) or np.isinf(itdata[-1,-1]):
         print('Error during calculation\n')
         error = True
     else:
         start = time.perf_counter()
-        itdata = np.asarray(iterator(render_iterates,coeffs,dimension))
+        itdata = np.asarray(iterator_optimized(render_iterates, coeffs, x0, dimension))
         end = time.perf_counter()
         iteration_time = end - start
 
@@ -28,20 +29,22 @@ def compute_attractor_single_thread(coeffs, render_iterates, dimension, render_c
     return itdata, error
 
 def worker(args):
-    thread_iterates, coeffs, dimension = args
-    return np.asarray(iterator(thread_iterates, coeffs, dimension))
+    thread_iterates, coeffs, x0, dimension = args
+    return np.asarray(iterator_optimized(thread_iterates, coeffs, x0, dimension))
 
 def compute_attractor(coeffs, render_iterates, dimension, render_check_ratio = 0.01, n_processes = 6):
 
     check_index = int(render_iterates * render_check_ratio)
-    itdata = np.asarray(iterator(check_index, coeffs, dimension))
+    x0 = np.random.uniform(-1e-1, 1e-1, (dimension + 1))
+    itdata = np.asarray(iterator_optimized(check_index, coeffs, x0, dimension))
 
     if np.isnan(itdata[-1,-1]) or np.isinf(itdata[-1,-1]):
         print(' Error during calculation\n')
         return None, True
         
     thread_iterates = render_iterates // n_processes
-    args_list = [(thread_iterates, coeffs, dimension) for _ in range(n_processes)]
+    x0_pool = np.random.uniform(-1e-1, 1e-1, (n_processes, dimension + 1))
+    args_list = [(thread_iterates, coeffs, x0_pool[i], dimension) for i in range(n_processes)]
 
     start = time.perf_counter()
     with ProcessPoolExecutor(max_workers = n_processes) as executor:
