@@ -113,8 +113,15 @@ def render_one_pass(args_list_render_one_pass):
     print(f"• One-Pass Render:     {time.perf_counter()-render_start:.1f} s")
     return render
 
+def save_image(render, dimension, seed):
+    output_dir = Path(__file__).parents[2] / "output" 
+    output_dir.mkdir(parents=True, exist_ok=True)
+    fname = output_dir / f'D{dimension}-{seed}.png'
+    plt.imsave(fname, render, dpi=300)
+    print(f"• Output:              {fname}\n")
 
-def render_attractor(xl, yl, zl, coeff, dimension, seed, tag, alpha = 0.0075, xres = 3200, yres = 1800, n_processes = 6):
+
+def render_attractor(xl, yl, zl, dimension, seed, alpha = 0.0075, xres = 3200, yres = 1800, n_processes = 6):
 
     xa = np.asarray(xl)
     ya = np.asarray(yl)
@@ -142,16 +149,10 @@ def render_attractor(xl, yl, zl, coeff, dimension, seed, tag, alpha = 0.0075, xr
             print(f"• Multi-Pass Render:   {time.perf_counter()-multi_start:.1f} s")
 
         else:
-
             args_list_render_one_pass = construct_render_args_one_pass(xres, yres, xa, ya, za, dx, dy, dz, bounds, alpha)
             render = render_one_pass(args_list_render_one_pass)
 
-        output_dir = Path(__file__).parents[2] / "output" 
-        output_dir.mkdir(parents=True, exist_ok=True)
-        fname = output_dir / f'D{dimension}-{seed}-{tag}.png'
-        
-        plt.imsave(fname, render, dpi=300)
-        print(f"• Output:              {fname}\n")
+        save_image(render, dimension, seed)
         print("────────────────────────────────────────────")
         print(f" Total Render Time:    {time.perf_counter()-start:.1f} s")
 

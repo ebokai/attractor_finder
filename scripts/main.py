@@ -22,7 +22,7 @@ def generate_attractor(render_iterates, xres, yres, alpha):
 			itdata[10000:, dimension - 3], 
 			itdata[10000:, dimension - 2], 
 			itdata[10000:, dimension - 1], 
-			coeffs, dimension, seed, 'xyz', 
+			dimension, seed, 
 			alpha=alpha, xres=xres, yres=yres)
 
 def main():
