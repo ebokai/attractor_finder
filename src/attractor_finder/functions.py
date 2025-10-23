@@ -1,4 +1,7 @@
 import numpy as np 
+import functools
+import time 
+
 from numba import njit, prange
 from attractor_finder.functions_numba import get_min_max_range_numba
 
@@ -82,3 +85,14 @@ def check_density(render, min_fill = 1.0):
     if fill_percentage > min_fill:
         return True
     return False
+
+def time_this(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.perf_counter()
+        result = func(*args, **kwargs)
+        end = time.perf_counter()
+        elapsed = end - start
+        print(f"{elapsed:.2f}s")
+        return result
+    return wrapper
