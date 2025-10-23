@@ -6,6 +6,7 @@
 __pycache__/
 *.py[cod]
 *.py.class
+*.npy
 
 # --- Virtual environments ---
 venv/
@@ -34,6 +35,7 @@ output/
 logs/
 tmp/
 scratch/
+legacy/
 
 # --- Jupyter / Editor cruft ---
 .ipynb_checkpoints/

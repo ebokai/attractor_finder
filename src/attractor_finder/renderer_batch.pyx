@@ -7,15 +7,15 @@ def compute_burn(int xres, int yres,
     double[:] xa, double[:] ya, double[:] za, 
     double[:] dxs, double[:] dys, double[:] dzs,
     double xrng, double xmin, double yrng, double ymin, 
-    double zrng, double zmin, double alpha, double[:] max_ds, double[:] burn_factors):
+    double zrng, double zmin, double alpha, double[:] max_deltas, double[:] burn_factors):
 
     cdef double[:,:,:] render = np.ones((yres, xres, 3))
     cdef int length = np.size(xa)
     cdef int I, J
     cdef double z_alpha
-    cdef double mdx = max_ds[0]
-    cdef double mdy = max_ds[1]
-    cdef double mdz = max_ds[2]
+    cdef double mdx = max_deltas[0]
+    cdef double mdy = max_deltas[1]
+    cdef double mdz = max_deltas[2]
     cdef double x, y, z
 
     bfr = burn_factors[0]
@@ -31,10 +31,10 @@ def compute_burn(int xres, int yres,
         dy = dys[i]
         dz = dzs[i]
 
-        J = <int>((x-xmin)/xrng * (xres-1))
-        I = <int>((y-ymin)/yrng * (yres-1))
+        J = <int>((x - xmin) / xrng * (xres - 1))
+        I = <int>((y - ymin) / yrng * (yres - 1))
 
-        z_alpha = 0.1 + 0.9*(z-zmin)/zrng  # scale alpha slightly with z
+        z_alpha = 0.1 + 0.9 * (z - zmin) / zrng  # scale alpha slightly with z
         
         burn_factor_r = alpha * z_alpha * (1+dx/mdx) * bfr
         burn_factor_g = alpha * z_alpha * (1+dy/mdy) * bfg
