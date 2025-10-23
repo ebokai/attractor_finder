@@ -17,7 +17,11 @@ def burn_worker(args):
 def render_worker(args):
     return np.asarray(compute_render_slice(*args))
 
-def construct_burn_args(xres, yres, xa, ya, za, dx, dy, dz, bounds, max_deltas, alpha, n_processes, burn_factors = np.array([0.75, 1.00, 1.25])):
+def construct_burn_args(
+    xres, yres, xa, ya, za, dx, dy, dz, 
+    bounds, max_deltas, alpha, n_processes, 
+    burn_factors = np.array([0.75, 1.00, 1.25])):
+
     n_iterates = np.size(xa[1:])
     it_ranges = np.linspace(1, n_iterates, n_processes + 1).astype(int)
     xmin, ymin, zmin, xrng, yrng, zrng = bounds
@@ -35,10 +39,26 @@ def construct_burn_args(xres, yres, xa, ya, za, dx, dy, dz, bounds, max_deltas, 
 
     return args_list_burn
 
-def construct_render_args(xres, yres, full_burn, n_processes, bgcolor = np.array([0.90, 0.90, 0.85])):
+def construct_render_args(
+    xres, yres, 
+    full_burn, n_processes, 
+    bgcolor = np.array([0.90, 0.90, 0.85])):
+
     y_slice = np.linspace(0, yres, n_processes+1).astype(int)
     args_list_render = [(xres, yres, y_slice[i], y_slice[i+1], bgcolor, full_burn) for i in range(n_processes)]
     return args_list_render
+
+def construct_render_args_one_pass(
+    xres, yres, 
+    xa, ya, za, dx, dy, dz, 
+    bounds, alpha, 
+    bgcolor = np.array([0.90, 0.90, 0.85]), 
+    burn_factors = np.array([0.75, 1.00, 1.25])):
+
+    xmin, ymin, zmin, xrng, yrng, zrng = bounds
+    args_list_render_one_pass = (xres, yres, xa[1:], ya[1:], za[1:], dx, dy, dz, xrng, xmin, yrng, ymin, zrng, zmin, alpha, bgcolor, burn_factors)
+    return args_list_render_one_pass
+
 
 def compute_deltas(xa, ya, za):
     start = time.perf_counter()
@@ -87,6 +107,11 @@ def render_pool(args_list_render, n_processes, xres, yres):
     print(f"• Pixel Colors:        {time.perf_counter()-pixel_start:.1f} s")
     return render
 
+def render_one_pass(args_list_render_one_pass):
+    render_start = time.perf_counter()
+    render = np.asarray(render_pixels(*args))
+    print(f"• One-Pass Render:     {time.perf_counter()-render_start:.1f} s")
+    return render
 
 
 def render_attractor(xl, yl, zl, coeff, dimension, seed, tag, alpha = 0.0075, xres = 3200, yres = 1800, n_processes = 6):
@@ -117,14 +142,9 @@ def render_attractor(xl, yl, zl, coeff, dimension, seed, tag, alpha = 0.0075, xr
             print(f"• Multi-Pass Render:   {time.perf_counter()-multi_start:.1f} s")
 
         else:
-            # fix this 
-            # throws error because bgcolor and burn_factors are not in scope
-            print('Rendering using one-pass rendering')
-            render_start = time.perf_counter()
-            xmin, ymin, zmin, xrng, yrng, zrng = bounds
-            render = np.asarray(render_pixels(xres,yres,xa[1:],ya[1:],za[1:],dx,dy,dz,xrng,xmin,yrng,ymin,zrng,zmin,alpha,bgcolor,burn_factors))
-            print(f"• One-Pass Render:     {time.perf_counter()-render_start:.1f} s")
 
+            args_list_render_one_pass = construct_render_args_one_pass(xres, yres, xa, ya, za, dx, dy, dz, bounds, alpha)
+            render = render_one_pass(args_list_render_one_pass)
 
         output_dir = Path(__file__).parents[2] / "output" 
         output_dir.mkdir(parents=True, exist_ok=True)
