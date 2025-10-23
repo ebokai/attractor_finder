@@ -1,11 +1,12 @@
-import numpy as np 
-import matplotlib.pyplot as plt
-
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
+import numpy as np
+import matplotlib.pyplot as plt
+
 from attractor_finder.functions import set_aspect, time_this
-from attractor_finder.functions_numba import get_dx_numba_parallel, get_max_numba, get_min_max_range_numba
+from attractor_finder.functions_numba import (
+    get_dx_numba_parallel, get_max_numba, get_min_max_range_numba)
 from attractor_finder.renderer_batch import compute_burn, compute_render_slice
 from attractor_finder.renderer import render_pixels
 
@@ -18,7 +19,7 @@ def pixel_worker(args):
 
 class AttractorRenderPipeline():
 
-    def __init__(self, data, xres, yres, dimension, used_seed, alpha,
+    def __init__(self, data, xres, yres, dimension, used_seed = 0, alpha = 0.025, 
         bgcolor = [0.9, 0.9, 0.85], burn_factors = [0.75, 1.00, 1.25]):
 
         self.xa = np.asarray(data[10000:, dimension - 3])
@@ -33,6 +34,8 @@ class AttractorRenderPipeline():
         self.alpha = alpha
         self.bgcolor = np.asarray(bgcolor)
         self.burn_factors = np.asarray(burn_factors)
+
+        self.n_processes = 6
 
         self.get_bounds()
         if not self.xnan:
@@ -165,12 +168,9 @@ class AttractorRenderPipeline():
         fname = output_dir / f'D{self.dimension}-{self.seed}.png'
         plt.imsave(fname, self.render, dpi=300)
 
-    def render(self, multi = True, n_processes = 6):
+    def render_attractor(self, multi = True, n_processes = 6):
         if multi:
             self.multi_pass_render(n_processes)
         else:
             self.one_pass_render()
         self.save_image()
-
-
-

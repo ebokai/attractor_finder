@@ -1,5 +1,5 @@
-from attractor_finder import search_attractor, compute_attractor, render_attractor
-from attractor_finder.render_class import AttractorRenderPipeline
+from attractor_finder import search_attractor, compute_attractor
+from attractor_finder.render import AttractorRenderPipeline
 from pathlib import Path
 
 import argparse
@@ -20,14 +20,7 @@ def generate_attractor(render_iterates, xres, yres, alpha):
 
 	if not error:
 		attractor_pipeline = AttractorRenderPipeline(itdata, xres, yres, dimension, seed, alpha)
-		attractor_pipeline.render()
-
-		# render_attractor(
-		# 	itdata[10000:, dimension - 3], 
-		# 	itdata[10000:, dimension - 2], 
-		# 	itdata[10000:, dimension - 1], 
-		# 	dimension, seed, 
-		# 	alpha=alpha, xres=xres, yres=yres)
+		attractor_pipeline.render_attractor()
 
 def main():
 
