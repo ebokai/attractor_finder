@@ -19,8 +19,8 @@ def generate_attractor(render_iterates, xres, yres, alpha):
 	itdata, error = compute_attractor(coeffs, render_iterates, dimension)
 
 	if not error:
-		attractor_pipeline = AttractorRenderPipeline(itdata, xres, yres, alpha)
-		attractor_pipeline.render_attractor(seed)
+		attractor_pipeline = AttractorRenderPipeline(itdata, xres, yres, dimension, seed, alpha)
+		attractor_pipeline.render_attractor()
 
 def main():
 
