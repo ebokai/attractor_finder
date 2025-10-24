@@ -6,16 +6,13 @@ import matplotlib.pyplot as plt
 
 from attractor_finder.functions import set_aspect, time_this
 from attractor_finder.functions_numba import (
-    get_dx_numba_parallel, get_max_numba, get_min_max_range_numba, get_IJ, scale_to_range)
+    get_dx_numba_parallel, get_max_numba, get_min_max_range_numba)
 from attractor_finder.renderer_batch import compute_burn, compute_burn_optimized, compute_render_slice
 from attractor_finder.renderer import render_pixels
 
 
 def burn_worker(args):
     return np.asarray(compute_burn(*args))
-
-def burn_opt_worker(args):
-    return np.asarray(compute_burn_optimized(*args))
 
 def pixel_worker(args):
     return np.asarray(compute_render_slice(*args))
@@ -113,40 +110,6 @@ class AttractorRenderPipeline():
             self._args_list_burn.append(args)
 
     @time_this
-    def construct_args_list_burn_opt(self):
-        """
-        construct argument list to pass to burn_opt_worker
-        """
-        print('... construct_args_list_burn_opt', end=" ")
-        self._args_list_burn_opt = []
-        it_ranges = np.linspace(1, len(self._xa[1:]), self.n_processes + 1)
-        it_ranges = it_ranges.astype(int)
-
-        dx_m = self._dx / self._max_deltas[0]
-        dy_m = self._dy / self._max_deltas[1]
-        dz_m = self._dz / self._max_deltas[2]
-        
-        I = get_IJ(self._ya, self._bounds['ymin'], self._bounds['yrng'], self.yres)
-        J = get_IJ(self._xa, self._bounds['xmin'], self._bounds['xrng'], self.xres)
-        z_alpha = scale_to_range(self._za, self._bounds['zmin'], self._bounds['zrng'])
-
-        for i in range(self.n_processes):
-            i0, i1 = it_ranges[i], it_ranges[i+1]
-            args = (
-                self.xres,
-                self.yres,
-                I[i0:i1],
-                J[i0:i1],
-                z_alpha[i0:i1],
-                dx_m[i0+1:i1+1],
-                dy_m[i0+1:i1+1],
-                dz_m[i0+1:i1+1],
-                self.alpha,
-                self._burn_factors
-                )
-            self._args_list_burn_opt.append(args)
-
-    @time_this
     def construct_args_list_pixel(self):
         """
         construct argument list to pass to pixel_worker
@@ -195,19 +158,6 @@ class AttractorRenderPipeline():
         print('... burn_pool', end=" ")
         with ProcessPoolExecutor(max_workers = self.n_processes) as executor:
             burn_batch = list(executor.map(burn_worker, self._args_list_burn))
-        self._full_burn = np.ones((self.yres, self.xres, 3))
-        for batch in burn_batch:
-            self._full_burn *= batch
-
-    @time_this
-    def burn_pool_optimized(self):
-        """
-        compute burn factors which are used to darken pixels
-        uses multiprocessing
-        """
-        print('... burn_pool_optimized', end=" ")
-        with ProcessPoolExecutor(max_workers = self.n_processes) as executor:
-            burn_batch = list(executor.map(burn_opt_worker, self._args_list_burn_opt))
         self._full_burn = np.ones((self.yres, self.xres, 3))
         for batch in burn_batch:
             self._full_burn *= batch
