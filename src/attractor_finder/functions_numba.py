@@ -42,3 +42,20 @@ def get_dx_numba_parallel(xdata):
     for i in prange(n):
         out[i] = abs(xdata[i+1] - xdata[i])
     return out
+
+@njit(parallel=True)
+def get_IJ(x, xmin, xrng, xres):
+    n = x.shape[0]
+    xrng_recip = 1/xrng
+    out = np.empty(n, dtype=np.int32)
+    for i in prange(n):
+        out[i] = int((x[i] - xmin) * xrng_recip * (xres - 1))
+    return out
+
+@njit(parallel=True)
+def scale_to_range(x, xmin, xrng, a=0, b=1):
+    n = x.shape[0]
+    out = np.empty(n, dtype=x.dtype)
+    for i in prange(n):
+        out[i] = a + b * (x[i] - xmin) / xrng
+    return out

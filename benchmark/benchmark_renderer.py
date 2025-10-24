@@ -102,9 +102,19 @@ def benchmark_render():
 
 	data = load_data()
 
-	render_pipeline = AttractorRenderPipeline(data, xres, yres, dimension = 3)
-	render_pipeline.construct_args_list_burn()
-	render_pipeline.burn_pool()
+	render_pipeline = AttractorRenderPipeline(data, xres, yres)
+
+	# start = perf_counter()
+	# for _ in range(10):
+	# 	render_pipeline.construct_args_list_burn()
+	# 	render_pipeline.burn_pool()
+	# print(f'avg time: {(perf_counter()-start)/10:.2f}s')
+
+	start = perf_counter()
+	for _ in range(10):
+		render_pipeline.construct_args_list_burn_opt()
+		render_pipeline.burn_pool_optimized()
+	print(f'avg time: {(perf_counter()-start)/10:.2f}s')
 
 if __name__ == '__main__':
 	# benchmark_render_utilities()
