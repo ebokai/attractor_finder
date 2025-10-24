@@ -19,8 +19,7 @@ def pixel_worker(args):
 
 class AttractorRenderPipeline():
 
-    def __init__(self, data, xres, yres, dimension, used_seed = 0, alpha = 0.025, 
-        bgcolor = [0.9, 0.9, 0.85], burn_factors = [0.75, 1.00, 1.25]):
+    def __init__(self, data, xres, yres, dimension, used_seed = 0, alpha = 0.025):
 
         self.xa = np.asarray(data[10000:, dimension - 3])
         self.ya = np.asarray(data[10000:, dimension - 2])
@@ -32,8 +31,8 @@ class AttractorRenderPipeline():
         self.xres = xres 
         self.yres = yres
         self.alpha = alpha
-        self.bgcolor = np.asarray(bgcolor)
-        self.burn_factors = np.asarray(burn_factors)
+        self.bgcolor = np.asarray([0.9,0.9,0.85])
+        self.burn_factors = np.asarray([0.75,1.00,1.25])
 
         self.n_processes = 6
 
