@@ -1,8 +1,8 @@
+from concurrent.futures import ProcessPoolExecutor
 import time
 import numpy as np
+from attractor_finder.iterator import iterator_optimized
 
-from attractor_finder.iterator import iterator, iterator_optimized
-from concurrent.futures import ProcessPoolExecutor
 
 def compute_attractor_single_thread(coeffs, render_iterates, dimension, render_check_ratio = 0.01):
 
@@ -32,7 +32,8 @@ def worker(args):
     thread_iterates, coeffs, x0, dimension = args
     return np.asarray(iterator_optimized(thread_iterates, coeffs, x0, dimension))
 
-def compute_attractor(coeffs, render_iterates, dimension, render_check_ratio = 0.01, n_processes = 6):
+def compute_attractor(coeffs, render_iterates, dimension,
+    render_check_ratio = 0.01, n_processes = 6):
 
     check_index = int(render_iterates * render_check_ratio)
     x0 = np.random.uniform(-1e-1, 1e-1, (dimension + 1))
@@ -41,7 +42,7 @@ def compute_attractor(coeffs, render_iterates, dimension, render_check_ratio = 0
     if np.isnan(itdata[-1,-1]) or np.isinf(itdata[-1,-1]):
         print(' Error during calculation\n')
         return None, True
-        
+
     thread_iterates = render_iterates // n_processes
     x0_pool = np.random.uniform(-1e-1, 1e-1, (n_processes, dimension + 1))
     args_list = [(thread_iterates, coeffs, x0_pool[i], dimension) for i in range(n_processes)]
@@ -60,5 +61,3 @@ def compute_attractor(coeffs, render_iterates, dimension, render_check_ratio = 0
     itdata = np.vstack(it_proc)
 
     return itdata, False
-
-

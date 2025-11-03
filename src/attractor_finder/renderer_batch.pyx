@@ -36,9 +36,9 @@ def compute_burn(int xres, int yres,
 
         z_alpha = 0.1 + 0.9 * (z - zmin) / zrng  # scale alpha slightly with z
         
-        burn_factor_r = alpha * z_alpha * (1+dx/mdx) * bfr
-        burn_factor_g = alpha * z_alpha * (1+dy/mdy) * bfg
-        burn_factor_b = alpha * z_alpha * (1+dz/mdz) * bfb
+        burn_factor_r = alpha * z_alpha * (1 + dx / mdx) * bfr
+        burn_factor_g = alpha * z_alpha * (1 + dy / mdy) * bfg
+        burn_factor_b = alpha * z_alpha * (1 + dz / mdz) * bfb
 
         # Multiplicative burn (scale toward black)
         render[I,J,0] *= (1 - burn_factor_r * render[I,J,0])
@@ -47,7 +47,7 @@ def compute_burn(int xres, int yres,
 
     return render
 
-def compute_render_slice(int xres, int yres, int ymin, int ymax, double[:] bgcolor, double[:,:,:] burn_factor):
+def compute_render_slice(int xres, int yres, int ymin, int ymax, double[:] bgcolor, double[:,:,:] burn_array):
 
     cdef double[:,:,:] render = np.zeros((yres, xres, 3))
     cdef int x, y
@@ -55,7 +55,7 @@ def compute_render_slice(int xres, int yres, int ymin, int ymax, double[:] bgcol
     for x in range(xres):
         for y in range(ymin, ymax):
             for k in range(3):
-                render[y,x,k] = bgcolor[k] * burn_factor[y,x,k]
+                render[y,x,k] = bgcolor[k] * burn_array[y,x,k]
                 if render[y,x,k] > 1.0:
                     render[y,x,k] = 1.0
                 elif render[y,x,k] < 0.0:

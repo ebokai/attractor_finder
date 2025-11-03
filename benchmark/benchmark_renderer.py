@@ -8,6 +8,8 @@ from attractor_finder.functions import (
 from attractor_finder.functions_numba import (
 	get_dx_numba, get_dx_numba_parallel, get_min_max_range_numba)
 
+from attractor_finder.render import AttractorRenderPipeline
+
 
 
 def benchmark_difference_arrays(data, func, n_runs=25):
@@ -34,7 +36,7 @@ def benchmark_aspect_ratio(data, xres, yres, n_runs=25):
 	times = []
 	for _ in range(n_runs):
 		start = perf_counter()
-		_ = set_aspect(xa, ya, za, xres, yres)
+		_ = set_aspect(xa, ya, xres, yres)
 		end = perf_counter()
 		times.append(end - start)
 	print('done.')
@@ -73,25 +75,43 @@ def load_data():
 	return data
 
 
-def benchmark_renderer():
+def benchmark_render_utilities():
 	print_sizes = load_print_sizes()
 	xres, yres = print_sizes['A4']
 
 	data = load_data()
 
-	print('Difference arrays')
+	print('\nDifference arrays')
 	print('-----------------')
-	# benchmark_difference_arrays(data, get_dx)
-	# benchmark_difference_arrays(data, get_dx_numba)
-	# benchmark_difference_arrays(data, get_dx_numba_parallel)
+	benchmark_difference_arrays(data, get_dx)
+	benchmark_difference_arrays(data, get_dx_numba)
+	benchmark_difference_arrays(data, get_dx_numba_parallel)
 
-	print('Aspect ratio')
+	print('\nAspect ratio')
 	print('------------')
 	benchmark_aspect_ratio(data, xres, yres)
 
-	print('Min/max values')
+	print('\nMin/max values')
 	print('------------')
 	benchmark_min_max(data, get_min_max_range)
 	benchmark_min_max(data, get_min_max_range_numba)
 
-benchmark_renderer()
+def benchmark_render():
+	print_sizes = load_print_sizes()
+	xres, yres = print_sizes['A4']
+
+	data = load_data()
+
+	render_pipeline = AttractorRenderPipeline(data, xres, yres)
+
+	start = perf_counter()
+	for _ in range(10):
+		render_pipeline.construct_args_list_burn()
+		render_pipeline.burn_pool()
+	print(f'avg time: {(perf_counter()-start)/10:.2f}s')
+
+
+
+if __name__ == '__main__':
+	# benchmark_render_utilities()
+	benchmark_render()

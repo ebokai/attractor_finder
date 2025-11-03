@@ -78,7 +78,7 @@ def pixel_density(xl, yl, xres=320, yres=320):
 
     return check_density(render)
     
-def check_density(render, min_fill = 1.0):
+def check_density(render, min_fill = 1.5):
     """ check if pixel density exceeds threshold """
     filled_pixels = np.count_nonzero(render)
     fill_percentage = 100 * filled_pixels/np.size(render)
