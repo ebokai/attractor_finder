@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from attractor_finder.functions import set_aspect, time_this
 from attractor_finder.functions_numba import (
     get_dx_numba_parallel, get_max_numba, get_min_max_range_numba)
-from attractor_finder.renderer_batch import compute_burn, compute_burn_optimized, compute_render_slice
+from attractor_finder.renderer_batch import compute_burn, compute_render_slice
 from attractor_finder.renderer import render_pixels
 
 
