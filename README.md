@@ -24,11 +24,11 @@ python scripts/main.py   # Cross-platform
 --render_iterates   # Number of iterations per attractor
 --n_attractors      # Total attractors to generate
 --alpha             # Alpha blending for rendering
---save_data         # Save iteration data as .npy
+--size              # Output resolution. Options: A5, A4, A3, A2, A1, Letter, 8x10, 11x14, 16x20, 18x24, Square_8, Square_12
 ```
 
 Example:
 ```bash
-python scripts/main.py --render_iterates 25000000 --n_attractors 50 --alpha 0.02 --save_data
+python scripts/main.py --render_iterates 25000000 --n_attractors 50 --alpha 0.02 --size A4
 ```
 ---
