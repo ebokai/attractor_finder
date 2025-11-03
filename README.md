@@ -24,7 +24,7 @@ python scripts/main.py   # Cross-platform
 --render_iterates   # Number of iterations per attractor. Default: 10,000,000.
 --n_attractors      # Total attractors to generate. Default: 100.
 --alpha             # Alpha blending for rendering. Float between 0 and 1. Default: 0.025.
---size              # Output resolution. Options: A5, A4, A3, A2, A1, Letter, 8x10, 11x14, 16x20, 18x24, Square_8, Square_12
+--size              # Output resolution. Options: A5, A4, A3, A2, A1, Letter, 8x10, 11x14, 16x20, 18x24, Square_8, Square_12.
 ```
 
 Example:
