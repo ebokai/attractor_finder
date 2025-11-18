@@ -3,10 +3,10 @@
 import numpy as np
 
 
-def compute_burn(int xres, int yres, 
-    double[:] xa, double[:] ya, double[:] za, 
+def compute_burn(int xres, int yres,
+    double[:] xa, double[:] ya, double[:] za,
     double[:] dxs, double[:] dys, double[:] dzs,
-    double xrng, double xmin, double yrng, double ymin, 
+    double xrng, double xmin, double yrng, double ymin,
     double zrng, double zmin, double alpha, double[:] max_deltas, double[:] burn_factors):
 
     cdef double[:,:,:] render = np.ones((yres, xres, 3))
@@ -35,7 +35,7 @@ def compute_burn(int xres, int yres,
         I = <int>((y - ymin) / yrng * (yres - 1))
 
         z_alpha = 0.1 + 0.9 * (z - zmin) / zrng  # scale alpha slightly with z
-        
+
         burn_factor_r = alpha * z_alpha * (1 + dx / mdx) * bfr
         burn_factor_g = alpha * z_alpha * (1 + dy / mdy) * bfg
         burn_factor_b = alpha * z_alpha * (1 + dz / mdz) * bfb

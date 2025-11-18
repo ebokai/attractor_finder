@@ -1,6 +1,6 @@
 #cython: boundscheck=False, wraparound=False, nonecheck=False
 
-import numpy as np 
+import numpy as np
 
 def iterator(int n_iterations, double[:] coeffs, double[:] x0, int dimension):
 
@@ -8,7 +8,7 @@ def iterator(int n_iterations, double[:] coeffs, double[:] x0, int dimension):
 	parameters
 	----------
 
-	n_iterations : int 
+	n_iterations : int
 		number of iterations
 
 	coeffs : np.ndarray of shape (num_coeffs,)
@@ -16,19 +16,19 @@ def iterator(int n_iterations, double[:] coeffs, double[:] x0, int dimension):
 
 	x0 : np.ndarray of shape (dimension + 1,)
 		initial position vector
-	
+
 	dimension : int
 		number of variables
 	"""
 
 	cdef double fsum = 0
 
-	cdef int t 
-	cdef int m 
-	cdef int n 
+	cdef int t
+	cdef int m
+	cdef int n
 	cdef int i
-	cdef int j 
-	cdef int k 
+	cdef int j
+	cdef int k
 
 	cdef double[:] coords = np.copy(x0)
 	cdef double[:] sums = np.zeros(dimension)
@@ -65,7 +65,7 @@ def iterator_optimized(int n_iterations, double[:] coeffs, double[:] x0, int dim
 	parameters
 	----------
 
-	n_iterations : int 
+	n_iterations : int
 		number of iterations
 
 	coeffs : np.ndarray of shape (num_coeffs,)
@@ -73,19 +73,19 @@ def iterator_optimized(int n_iterations, double[:] coeffs, double[:] x0, int dim
 
 	x0 : np.ndarray of shape (dimension + 1,)
 		initial position vector
-	
+
 	dimension : int
 		number of variables
 	"""
 
 	cdef double fsum = 0
 
-	cdef int t 
-	cdef int m 
-	cdef int n 
+	cdef int t
+	cdef int m
+	cdef int n
 	cdef int i
-	cdef int j 
-	cdef int k 
+	cdef int j
+	cdef int k
 
 	cdef int d1 = dimension + 1
 
