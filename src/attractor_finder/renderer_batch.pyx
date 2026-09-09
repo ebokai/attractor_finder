@@ -3,24 +3,30 @@
 import numpy as np
 
 
-def compute_burn(int xres, int yres, 
-    double[:] xa, double[:] ya, double[:] za, 
+def compute_burn(int xres, int yres,
+    double[:] xa, double[:] ya, double[:] za,
     double[:] dxs, double[:] dys, double[:] dzs,
-    double xrng, double xmin, double yrng, double ymin, 
+    double xrng, double xmin, double yrng, double ymin,
     double zrng, double zmin, double alpha, double[:] max_deltas, double[:] burn_factors):
 
-    cdef double[:,:,:] render = np.ones((yres, xres, 3))
-    cdef int length = np.size(xa)
-    cdef int I, J
+    cdef float[:,:,:] render = np.ones((yres, xres, 3), dtype=np.float32)
+    cdef int length = xa.shape[0]
+    cdef int I, J, i
     cdef double z_alpha
     cdef double mdx = max_deltas[0]
     cdef double mdy = max_deltas[1]
     cdef double mdz = max_deltas[2]
-    cdef double x, y, z
+    cdef double x, y, z, dx, dy, dz
+    cdef double inv_mdx = 1.0/mdx
+    cdef double inv_mdy = 1.0/mdy
+    cdef double inv_mdz = 1.0/mdz
+    cdef double inv_xrng = (xres-1) / xrng
+    cdef double inv_yrng = (yres-1) / yrng
+    cdef double inv_zrng = 1.0/zrng
 
-    bfr = burn_factors[0]
-    bfg = burn_factors[1]
-    bfb = burn_factors[2]
+    cdef double bfr = burn_factors[0]
+    cdef double bfg = burn_factors[1]
+    cdef double bfb = burn_factors[2]
 
     # Draw attractor points in black with low alpha
     for i in range(length):
@@ -31,14 +37,14 @@ def compute_burn(int xres, int yres,
         dy = dys[i]
         dz = dzs[i]
 
-        J = <int>((x - xmin) / xrng * (xres - 1))
-        I = <int>((y - ymin) / yrng * (yres - 1))
+        J = <int>((x - xmin) * inv_xrng)
+        I = <int>((y - ymin) * inv_yrng)
 
-        z_alpha = 0.1 + 0.9 * (z - zmin) / zrng  # scale alpha slightly with z
-        
-        burn_factor_r = alpha * z_alpha * (1 + dx / mdx) * bfr
-        burn_factor_g = alpha * z_alpha * (1 + dy / mdy) * bfg
-        burn_factor_b = alpha * z_alpha * (1 + dz / mdz) * bfb
+        z_alpha = 0.1 + 0.9 * (z - zmin) * inv_zrng  # scale alpha slightly with z
+
+        burn_factor_r = alpha * z_alpha * (1 + dx * inv_mdx) * bfr
+        burn_factor_g = alpha * z_alpha * (1 + dy * inv_mdy) * bfg
+        burn_factor_b = alpha * z_alpha * (1 + dz * inv_mdz) * bfb
 
         # Multiplicative burn (scale toward black)
         render[I,J,0] *= (1 - burn_factor_r * render[I,J,0])
