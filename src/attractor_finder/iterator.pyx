@@ -61,6 +61,8 @@ def iterator(int n_iterations, double[:] coeffs, double[:] x0, int dimension):
 
 def iterator_optimized(int n_iterations, double[:] coeffs, double[:] x0, int dimension):
 
+	print(" Using optimized iterator v26.09.09.00")
+
 	"""
 	parameters
 	----------
@@ -107,6 +109,7 @@ def iterator_optimized(int n_iterations, double[:] coeffs, double[:] x0, int dim
 				for j in range(i, d1):
 					for k in range(j, d1):
 
+						# coords[i] * coords[j] * coords[k] doesn't depend on m - can be precomputed
 						fsum = fsum + coeffs[n] * coords[i] * coords[j] * coords[k]
 
 						n += 1
